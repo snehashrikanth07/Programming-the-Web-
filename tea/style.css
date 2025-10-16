@@ -1,0 +1,85 @@
+body {
+    margin: 0;
+    
+    /* Set a nice background color */
+    background-color: #f88181; 
+    
+    /* Choose a clean font */
+    font-family: 'Arial', sans-serif;
+    
+    /* Use Flexbox to center the card on the page */
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    min-height: 100vh; /* Make body take up the full height of the screen */
+}
+
+
+/* --- Menu Card Styles (The main container) --- */
+
+.menu-card {
+    /* Set a fixed size for the card */
+    width: 280px;
+    
+    /* Box Model: White background and rounded corners */
+    background-color: rgb(252, 252, 252);
+    border-radius: 8px;
+    
+    /* A subtle shadow to lift the card off the background */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    
+    /* Ensure the image doesn't go outside the rounded corners */
+    overflow: hidden;
+}
+
+
+/* --- Image Styles --- */
+
+.card-image img {
+    /* Make the image fill the entire width of the card */
+    width: 100%;
+    height: auto;
+    /* 'display: block' helps prevent extra space below the image */
+    display: block; 
+}
+
+
+/* --- Text Content Styles (The Box Model) --- */
+
+.card-content {
+    /* Padding provides the required spacing around the text content */
+    padding: 15px;
+}
+
+
+/* --- Typography and Layout --- */
+
+.item-title {
+    /* Clean font size for the heading */
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #ffffff;
+    /* Clear default margin for clean spacing */
+    margin: 0 0 4px 0; 
+}
+
+.item-description {
+    /* Smaller font for the description */
+    font-size: 0.85em;
+    color: #777;
+    /* Clear default margin */
+    margin: 0 0 10px 0;
+}
+
+/* Flexbox to position the price on the right */
+.item-details {
+    display: flex;
+    /* This pushes the price text all the way to the right */
+    justify-content: flex-end; 
+}
+
+.item-price {
+    font-size: 1.1em;
+    font-weight: 600; /* Slightly bolder */
+    color: #000;
+}
