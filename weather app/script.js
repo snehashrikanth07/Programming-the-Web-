@@ -18,6 +18,7 @@ const currentDateEl = qs('#currentDate');
 const currentTempEl = qs('#currentTemperature');
 const currentIconEl = qs('#currentWeatherIcon');
 const unitsToggle = qs('#unitsToggle');
+const errorMessageEl = qs('#errorMessage'); // Assuming you have an element for error messages
 
 function setLoading(isLoading) {
   if (!searchBtn) return;
@@ -37,10 +38,16 @@ function getWeatherIconFromCode(code) {
 async function getCoordinates(query) {
   const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1&language=en&format=json`;
   const res = await fetch(url);
-  if (!res.ok) throw new Error('Geocoding error');
+  if (!res.ok) {
+    throw new Error('Oops! Something went wrong while trying to find your location. Please try again.');
+  }
   const data = await res.json();
-  if (!data.results || data.results.length === 0) throw new Error(`Location "${query}" not found`);
+  if (!data.results || data.results.length === 0) {
+    throw new Error(`Hmm, couldn't find "${query}". Double-check the spelling or try a different place!`);
+  }
   const r = data.results[0];
+  // Make the place name a bit more user-friendly, e.g., "London, United Kingdom"
+  // instead of just "London" if country is available.
   return { lat: r.latitude, lon: r.longitude, name: r.name + (r.country ? ', ' + r.country : '') };
 }
 
@@ -61,7 +68,9 @@ async function fetchWeather(lat, lon, units) {
   });
   const url = `https://api.open-meteo.com/v1/forecast?${params.toString()}`;
   const res = await fetch(url);
-  if (!res.ok) throw new Error('Weather API error');
+  if (!res.ok) {
+    throw new Error('Couldn\'t fetch the weather data right now. The weather gods might be busy!');
+  }
   return res.json();
 }
 
@@ -83,14 +92,17 @@ function findNearestIndex(times) {
 function clearChildren(el) { while (el && el.firstChild) el.removeChild(el.firstChild); }
 
 function renderAll(data, placeName, units) {
+  // Clear any previous error messages
+  if (errorMessageEl) errorMessageEl.textContent = '';
+
   const { current_weather, hourly, daily } = data;
 
   if (placeNameEl) placeNameEl.textContent = placeName;
   if (currentDateEl) {
     const options = { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' };
-    currentDateEl.textContent = new Date(current_weather.time).toLocaleDateString('en-US', options);
+    currentDateEl.textContent = new Date(current_weather.time).toLocaleDateString('en-US', options); // "Monday, Jan 1, 2023"
   }
-  
+
   const isMetric = units === 'metric';
   const tempUnit = isMetric ? '°C' : '°F';
   if (currentTempEl) currentTempEl.textContent = `${Math.round(current_weather.temperature)}°`;
@@ -104,7 +116,7 @@ function renderAll(data, placeName, units) {
   const windUnit = isMetric ? 'km/h' : 'mph';
   const precipUnit = isMetric ? 'mm' : 'in';
 
-  if (feelsLikeEl) feelsLikeEl.textContent = `${Math.round(feelsLike)}°`; // API converts this too
+  if (feelsLikeEl) feelsLikeEl.textContent = `${Math.round(feelsLike)}°`; // "Feels like" temperature
   if (humidityEl) humidityEl.textContent = humidity != null ? `${humidity}%` : '—';
   if (windEl) windEl.textContent = `${current_weather.windspeed} ${windUnit}`;
   if (precipEl) precipEl.textContent = precip != null ? `${precip.toFixed(1)} ${precipUnit}` : '—';
@@ -117,7 +129,7 @@ function renderAll(data, placeName, units) {
       const day = daily.time[i];
       const dayName = new Date(day).toLocaleDateString('en-US', { weekday: 'short' });
       const max = Math.round(daily.temperature_2m_max[i]);
-      const min = Math.round(daily.temperature_2m_min[i]);
+      const min = Math.round(daily.temperature_2m_min[i]); // Min/max daily temperatures
       const icon = getWeatherIconFromCode(daily.weathercode ? daily.weathercode[i] : -1);
       card.innerHTML = `
         <strong>${dayName}</strong>
@@ -137,7 +149,7 @@ function renderAll(data, placeName, units) {
       const hourLabel = new Date(hourly.time[i]).toLocaleTimeString('en-US', { hour: 'numeric', hour12: true });
       const t = Math.round(hourly.temperature_2m[i]);
       const icon = getWeatherIconFromCode(hourly.weathercode ? hourly.weathercode[i] : -1);
-      el.innerHTML = `<div>${hourLabel}</div><div>${icon}</div><div>${t}°</div>`; // API converts this too
+      el.innerHTML = `<div>${hourLabel}</div><div>${icon}</div><div>${t}°</div>`; // Hourly temperature and icon
       hourlyContainer.appendChild(el);
     }
   }
@@ -149,8 +161,11 @@ async function doSearch(query) {
     const place = await getCoordinates(query); 
     const data = await fetchWeather(place.lat, place.lon, currentUnits);
     renderAll(data, place.name, currentUnits);
+    if (errorMessageEl) errorMessageEl.textContent = ''; // Clear error on success
   } catch (err) {
-    alert(err.message || 'Failed to fetch weather');
+    // Display a user-friendly error message
+    if (errorMessageEl) errorMessageEl.textContent = err.message || 'Something went wrong. Please try again later!';
+    // alert(err.message || 'Failed to fetch weather'); // Removed alert for better UX
     console.error(err);
   } finally {
     setLoading(false);
@@ -161,7 +176,7 @@ const handleSearch = () => {
   const query = searchInput.value.trim();
   if (query) {
     doSearch(query);
-  } else {
+  } else { // If search input is empty
     alert('Please enter a city name.');
   }
 };
@@ -181,10 +196,11 @@ unitsToggle.addEventListener('change', (e) => {
 });
 
 function initializeApp() {
+  // Set the units toggle based on the saved preference
   unitsToggle.checked = currentUnits === 'imperial';
 
   const defaultCity = 'Berlin';
-  searchInput.value = defaultCity;
+  searchInput.value = defaultCity; // Pre-fill with a default city
   doSearch(defaultCity);
 }
 

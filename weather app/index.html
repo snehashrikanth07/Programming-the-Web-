@@ -13,11 +13,11 @@
     <main class="container">
       <header class="app-header">
         <div class="logo">Weather App</div>
-        <div class="units-control">
-          <span>°C</span>
-          <label class="switch">
-            <input type="checkbox" id="unitsToggle">
-            <span class="slider round"></span>
+        <div class="units-control" aria-label="Temperature units selector">
+          <span aria-hidden="true">°C</span>
+          <label class="switch" for="unitsToggle">
+            <input type="checkbox" id="unitsToggle" role="switch" aria-checked="false" aria-label="Toggle between Celsius and Fahrenheit">
+            <span class="slider round" aria-hidden="true"></span>
           </label>
           <span>°F</span>
         </div>
