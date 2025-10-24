@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon-32x32.png">
+    <title>Frontend Mentor | Weather app</title>
+
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <main class="container">
+      <header class="app-header">
+        <div class="logo">Weather App</div>
+        <div class="units-control">
+          <span>°C</span>
+          <label class="switch">
+            <input type="checkbox" id="unitsToggle">
+            <span class="slider round"></span>
+          </label>
+          <span>°F</span>
+        </div>
+      </header>
+      <h1>How's the sky looking today?</h1>
+
+      <div class="search-row">
+        <input id="search" type="search" placeholder="Search" aria-label="Search for a city" />
+        <button id="searchBtn">Search</button>
+      </div>
+
+      <section class="current">
+        <div class="current-info">
+          <h2 id="placeName">—</h2>
+          <p id="currentDate">—</p>
+        </div>
+        <div class="current-display">
+          <span id="currentWeatherIcon" class="weather-icon-large"></span>
+          <p id="currentTemperature" class="temp-large">—</p>
+        </div>
+      </section>
+
+      <section class="metrics">
+        <div class="metric-item">
+          <h4>Feels like</h4>
+          <p id="feelsLike">—</p>
+        </div>
+        <div class="metric-item">
+          <h4>Humidity</h4>
+          <p id="humidity">—</p>
+        </div>
+        <div class="metric-item">
+          <h4>Wind</h4>
+          <p id="wind">—</p>
+        </div>
+        <div class="metric-item">
+          <h4>Precipitation</h4>
+          <p id="precipitation">—</p>
+        </div>
+      </section>
+
+      <section>
+        <h2>Daily forecast</h2>
+        <div id="dailyForecast" class="forecast-list">
+          <!-- daily forecast cards -->
+        </div>
+      </section>
+
+      <section>
+        <h2>Hourly forecast</h2>
+        <div id="hourlyForecast" class="forecast-list">
+          <!-- hourly forecast items -->
+        </div>
+      </section>
+
+      <p class="attribution">Weather data by <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a></p>
+
+    </main>
+    <script src="script.js"></script>
+  </body>
+</html>
